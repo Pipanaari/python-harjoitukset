@@ -6,3 +6,6 @@ else :
     print ("not epic")
 
 print("What's up!")
+
+for i in range(5):
+    print(f"Hello number {i}")
