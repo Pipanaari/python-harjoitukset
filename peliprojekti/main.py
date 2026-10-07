@@ -15,11 +15,14 @@ while command != 'lopeta':
         text = input()
         numbers = text.split()
         sum = 0
+        numOfLoops = 0
         print("Total sum of ", end='')
         for n in numbers:
             sum += int(n)
+            numOfLoops += 1
             print(n, end=' ')
-            if n != numbers[len(numbers) - 1]:
+            #print(numbers[::-1].index(n))
+            if numOfLoops != len(numbers):
                 print("+", end=' ')
         print(f"= {sum}\n")
     if command == 'name':
