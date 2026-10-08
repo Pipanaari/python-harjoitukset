@@ -5,6 +5,9 @@ Age = input('Input your age: ')
 ageCheck = 1
 AwesomeList = []
 
+def clear(): 
+    os.system("cls")
+
 if int(Age) >= 12:
     print("Hello " + User + f", age {Age}. Select from the commands below.")
 def Sum(): #Function for calculating sum of numbers
@@ -95,7 +98,7 @@ while command != 'lopeta':
         printList(AwesomeList)
     if command == 'game':
         while command != 'lopeta':
-            os.system("clear")
+            clear()
             gameIntro()
             #print(
             #    "Commands:"
@@ -112,14 +115,18 @@ while command != 'lopeta':
                     "item" : "glass shard",
                     "rooms" : ["west lake", "north roads"],
                     "usable" : {
-                        "wooden stool" : "You stepped on the stool and were able to get up  "
+                        "wooden stool" : ["You stepped on the stool and were able to get up  "]
                     }
                 },
                 "vines" : {
                     "rooms" : ["west lake", "north roads"],
                     "usable" : {
-                        "glass shard" : "You sliced a way open with the sharp piece of glass! You can now go through.\n"
+                        "glass shard" : ["You sliced a way open with the sharp piece of glass! You can now go through.\n", 1]
                     }
+                },
+                "behind vines" : {
+                    "item" : "wooden stool",
+                    "rooms" : ["vines"]
                 },
                 "north roads" : {
                     "rooms" : ["cliffs", "vines"]
@@ -132,11 +139,11 @@ while command != 'lopeta':
                     "rooms" : ["south roads"]
                 },
                 "east lake" : {
-                    "item" : "wooden stool",
                     "rooms" : ["south roads"],
                     "hint" : "There's something at the distant, but you can't quite make it out.\n",
                     "usable" : {
-                        "binoculars" : "There's a stool behind the vines! Maybe you can figure out a way to get past the vines.\n"
+                        "binoculars" : ["There's a stool behind some vines in the distance! Maybe you can figure out a way to get past the vines.\n"],
+                    "unlockable" : "behind vines"
                     }
                 }
             }
@@ -151,6 +158,8 @@ while command != 'lopeta':
                     print("Invalid move.")
                 elif reason == "u-item":
                     print(f"You don't have {command[1]} in your inventory.")
+                elif reason == "parameter":
+                    print(f"'{command[0]}' requires a parameter divided by a space")
                 else:
                     print("Invalid move")
             def status(action = '',hint = '', item_used = '', item_spotted = ''):
@@ -177,34 +186,41 @@ use ["item"]
                 else :
                     hint = ''
                 if "item" in roomInfo:
-                    itemSpotted = f"You see {roomInfo['item']} littered on the ground.\n"
+                    itemSpotted = f"You see {roomInfo["item"]} littered on the ground.\n"
                 else :
                     itemSpotted = ''
                 status(action, hint, itemUsed, itemSpotted) #Prints the status message with each loop with actions and special messages as parameters
                 action = ''
 
                 command = input('>')
-                os.system("clear")
+                clear()
                 command = command.split(" ", 1)
 
                 if command[0] == "go": #Checks the player's commands and acts accoringly
-                    for n in roomInfo["rooms"]:
-                        if command[1] == n:
-                            currentRoom = command[1]
-                            action = f"You walked to {currentRoom}.\n"
-                    continue        
+                    try :
+                        for n in roomInfo["rooms"]:
+                            if command[1] == n:
+                                currentRoom = command[1]
+                                action = f"You walked to the {currentRoom}.\n"
+                    except :
+                        error("parameter")
                 elif command[0] == "get" and "item" in roomInfo:
-                    if command[1] == roomInfo["item"]:
-                        inventory.append(command[1])
-                        del islandMap[currentRoom]["item"]
-                        action = f"You got the {command[1]}!\n"
-                        continue
-                    else:
-                        error("g-item")
+                    try :
+                        if command[1] == roomInfo["item"]:
+                            inventory.append(command[1])
+                            del islandMap[currentRoom]["item"]
+                            action = f"You got the {command[1]}!\n"
+                        else:
+                            error("g-item")
+                    except :
+                        error("parameter")
                 elif command[0] == "use" and "usable" in roomInfo:
                     if command[1] in roomInfo["usable"] and command[1] in inventory:
-                        itemUsed = roomInfo["usable"][command[1]]
-                        del islandMap[currentRoom]["hint"]
+                        itemUsed = roomInfo["usable"][command[1]][0]
+                        if "hint" in roomInfo:
+                            del islandMap[currentRoom]["hint"]
+                        if "unlockable" in roomInfo:
+                            islandMap[currentRoom]["rooms"].append(roomInfo["unlockable"])
                         action = f"You used the {command[1]}!\n"
                         continue
                     else :
