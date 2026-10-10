@@ -186,7 +186,7 @@ use ["item"]
                 else :
                     hint = ''
                 if "item" in roomInfo:
-                    itemSpotted = f"You see {roomInfo["item"]} littered on the ground.\n"
+                    itemSpotted = f"You see {roomInfo['item']} littered on the ground.\n"
                 else :
                     itemSpotted = ''
                 status(action, hint, itemUsed, itemSpotted) #Prints the status message with each loop with actions and special messages as parameters
@@ -215,22 +215,19 @@ use ["item"]
                     except :
                         error("parameter")
                 elif command[0] == "use" and "usable" in roomInfo:
-                    if command[1] in roomInfo["usable"] and command[1] in inventory:
-                        itemUsed = roomInfo["usable"][command[1]][0]
-                        if "hint" in roomInfo:
-                            del islandMap[currentRoom]["hint"]
-                        if "unlockable" in roomInfo:
-                            islandMap[currentRoom]["rooms"].append(roomInfo["unlockable"])
-                        action = f"You used the {command[1]}!\n"
-                        continue
-                    else :
-                        error("u-item")
+                    try :
+                        if command[1] in roomInfo["usable"] and command[1] in inventory:
+                            itemUsed = roomInfo["usable"][command[1]][0]
+                            if "hint" in roomInfo:
+                                del islandMap[currentRoom]["hint"]
+                            if "unlockable" in roomInfo:
+                                islandMap[currentRoom]["rooms"].append(roomInfo["unlockable"])
+                            action = f"You used the {command[1]}!\n"
+                            continue
+                        else :
+                            error("u-item")
+                    except :
+                        error("parameter")
                 else:
                     error("command")
                 itemUsed = ''
-
-
-
-
-                        
-                
