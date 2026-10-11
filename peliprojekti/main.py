@@ -98,6 +98,26 @@ while command != 'lopeta':
         printList(AwesomeList)
     if command == 'game':
         while command != 'lopeta':
+            def saveGame() :
+                with open("edistys.json", "w") as f:
+                    islandMap["top cliffs"]["usable"]["binoculars"][0] = ''
+                    json.dump({
+                        "islandMap" : islandMap,
+                        "inventory" : inventory,
+                        "currentRoom" : currentRoom,
+                        "player" : User
+                    }, f, indent=4)
+                    islandMap["top cliffs"]["usable"]["binoculars"][0] = amountLeft
+            def loadGame() :
+                with open("edistys.json", "r") as f:
+                    global islandMap, inventory, currentRoom, User
+                    saveObject = json.load(f)
+                    islandMap = saveObject["islandMap"]
+                    inventory = saveObject["inventory"]
+                    currentRoom = saveObject["currentRoom"]
+                    User = saveObject["player"]
+                    islandMap["top cliffs"]["usable"]["binoculars"][0] = amountLeft
+                    
             clear()
             gameIntro()
             #print(
@@ -212,6 +232,9 @@ commands:
 go {roomInfo["rooms"]}
 get ["item name"]
 use ["item name"]
+
+save
+load
 ---------------------
 ''')
             class Player:
@@ -237,6 +260,8 @@ use ["item name"]
 
                 command = input('>')
                 clear()
+                loadGame()
+                print("Loaded baby.\n")
                 command = command.split(" ", 1)
                 try :
                     if command[0] == "go":                          #All logic in the 'go' command
@@ -290,6 +315,10 @@ use ["item name"]
                                         error("useless")
                             else :
                                 error("wrong-item")
+                    elif command[0] == "save" :
+                        saveGame()
+                    elif command[0] == "load" :
+                        loadGame()
                     else:                                           #When player doesn't write any valid command
                         error("command")
                     itemUsed = ''
