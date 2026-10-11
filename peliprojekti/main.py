@@ -97,7 +97,8 @@ while command != 'lopeta':
     if command == 'print' and ageCheck == 1:
         printList(AwesomeList)
     if command == 'game':
-        while command != 'lopeta':
+        gameOver = 0
+        while gameOver == 0:
             def saveGame() :
                 with open("edistys.json", "w") as f:
                     islandMap["top cliffs"]["usable"]["binoculars"][0] = ''
@@ -323,4 +324,5 @@ load
                 except :              #Valid command, lacking parameters, since try can only fail after getting through at least one if statement
                     error('parameter')
             print("Congratulaions, you win! You succesfully collected all of the trash!")
-            input()
+            input("Press enter>")
+            gameOver = 1
