@@ -1,4 +1,4 @@
-import os
+import os, json
 
 User = input("Input your name: ")
 Age = input('Input your age: ')
@@ -105,7 +105,8 @@ while command != 'lopeta':
             #    "\nnew game: Start a new game from the very beginning."
             #    "\nload: Continue from a previous save file.\n"
             #    )
-            inventory = ["box", "binoculars"]
+            #command = input(">")
+            inventory = []
             def amountLeft() :
                 num = (5 - len(inventory))
                 text = ''
