@@ -260,8 +260,6 @@ load
 
                 command = input('>')
                 clear()
-                loadGame()
-                print("Loaded baby.\n")
                 command = command.split(" ", 1)
                 try :
                     if command[0] == "go":                          #All logic in the 'go' command
