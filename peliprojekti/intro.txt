@@ -1,3 +1,5 @@
 
 Welcome to the Island Recycle Game!
-You've landed on a small island littered with trash and it's your job to clean as much as you can.
+You've landed on a small island littered with trash and it's your job to clean as much as you can. 
+
+To win the game, collect one of every kind of waste (plastic, metal, glass, cardboard, mixed).

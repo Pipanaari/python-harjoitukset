@@ -105,48 +105,67 @@ while command != 'lopeta':
             #    "\nnew game: Start a new game from the very beginning."
             #    "\nload: Continue from a previous save file.\n"
             #    )
-            inventory = []
-            glass_shard = 0
-            wooden_stool = 0
+            inventory = ["box", "binoculars"]
+            def amountLeft() :
+                num = (5 - len(inventory))
+                text = ''
+                if num > 1 :
+                    text = f"You could see the whole island from up here, you still see {num} pieces of trash left.\n"
+                elif num == 1: 
+                    text = f"You could see the whole island from up here, you still see {num} piece of trash left.\n"
+                else : 
+                    text = "You could see the whole island from up here, it's as clean as ever.\n"
+                return text
             islandMap = {
                 "west lake": {
-                    "item" : "metal scrap",
                     "rooms" : ["cliffs", "vines", "south roads"]
                 },
                 "cliffs" : {
-                    "item" : "glass shard",
+                    "item" : ["glass shard", 0], #[item name, id]
                     "rooms" : ["west lake", "north roads"],
                     "hint" : "It looks like you could almost get on top of these cliffs, but it's just beyond your reach.\n",
                     "usable" : {
-                        "wooden stool" : ["With the stool down and could now jump on top from here!\n", 1]
+                        "box" : ["You origamied the cardboard into a sturdy stool. With the stool down and could now jump on top from here!\n", "With the cardboard stool down you're able to jump on top from here!\n", 3, 3, 0] #[All use messages, tag, id, 0 = reusable 1 = one time use]
+                    },
+                    "unlockable" : "top cliffs"
+                },
+                "top cliffs" : {
+                    "item" : ["plastic bottle", 2],
+                    "rooms" : ["cliffs"],
+                    "usable" : {
+                        "binoculars" : [amountLeft, 0, 0, 0]
                     }
                 },
                 "vines" : {
                     "rooms" : ["west lake", "north roads"],
                     "usable" : {
-                        "glass shard" : ["You sliced a way open with the sharp piece of glass! You can now go through.\n", 1]
+                        "glass shard" : ["You sliced a way open with the sharp piece of glass! You can now go through.\n", 0, 1, 1]
                     },
                     "unlockable" : "behind vines"
                 },
                 "behind vines" : {
-                    "item" : "wooden stool",
+                    "item" : ["box", 1],
                     "rooms" : ["vines"]
                 },
                 "north roads" : {
+                    "item" : ["metal scrap", 0],
                     "rooms" : ["cliffs", "vines"]
                 },
                 "south roads" : {
                     "rooms" : ["west lake", "boulder", "east lake"]
                 },
                 "boulder" : {
-                    "item" : "binoculars",
-                    "rooms" : ["south roads"]
+                    "item" : ["binoculars", 0],
+                    "rooms" : ["south roads"],
+                    "usable" : {
+                        "binoculars" : ["Standing on top of the boulder, you could see some more trash on top of the cliffs.\n", "You can see the top of the cliffs look as clean as ever!\n", 2, 0, 0]
+                    }
                 },
                 "east lake" : {
                     "rooms" : ["south roads"],
                     "hint" : "There's something at the distant, but you can't quite make it out.\n",
                     "usable" : {
-                        "binoculars" : ["There's a stool behind some vines in the distance! Maybe you can figure out a way to get past the vines.\n", "There's a stool behind the recently cut vines. Did you really return here to admire your work from afar?\n","There's not a stool behind some vines in the distance. It also looks like some of the vines got shorter.\n"]
+                        "binoculars" : ["There's a cardboard box behind some vines in the distance! Maybe you can figure out a way to get past the vines.\n", "There's a cardboard box behind the recently cut vines. Did you really return here to admire your work from afar?\n","There's not a cardboard box behind some vines in the distance. It also looks like some of the vines got shorter.\n", 1, 0, 0]
                     }
                 }
             }
@@ -154,19 +173,32 @@ while command != 'lopeta':
             action = ''
             hint = ''
             itemUsed = ''
+            def changeMap(id = 0) : #item id is checked with usable item's tag. If they match the usable item's use message gets changed
+                for n in islandMap :
+                    if "usable" in islandMap[n] :
+                        for x in islandMap[n]["usable"] :
+                            itemList = islandMap[n]["usable"][x]
+                            if id == itemList[len(itemList) - 3] and id != 0 :
+                                if len(itemList) >= 5 :
+                                    del islandMap[n]["usable"][x][0]
             def error(reason):
-                if reason == "g-item":
+                if reason == "getNoItem":
                     print("There is no such item.")
                 elif reason == "command":
                     print("That move isn't in your arsenal.")
                 elif reason == "useless":
-                    print(f"The {command[1]} doesn't seem too useful here.")
+                    if command[1][::-1][0] == "s" :
+                        print(f"The {command[1]} don't seem too useful here.")
+                    else :
+                        print(f"The {command[1]} doesn't seem too useful here.")
                 elif reason == "wrong-item":
                     print(f"You searched for the {command[1]} but you couldn't find such a thing.")
                 elif reason == "parameter":
                     print(f"'{command[0]}' requires a parameter divided by a space")
                 elif reason == "go":
-                    print(f"you tried to '{command[0]}', but didn't know where.")
+                    print(f"You tried to '{command[0]}', but didn't know where.")
+                elif reason == "binoculars":
+                    print(f"You didn't see anything interesting with the {command[1]}.\nMaybe you could get a cooler view on top of something.")
                 else:
                     print("Invalid move!")
             def status(action = '',hint = '', item_used = '', item_spotted = ''):
@@ -186,14 +218,17 @@ use ["item name"]
                     self.name = name
                     self.currentRoom = currentRoom
                     self.items = items
-            while True:
+            while len(inventory) < 5:
                 roomInfo = islandMap[currentRoom]
                 if "hint" in roomInfo:
                     hint = roomInfo["hint"]
                 else :
                     hint = ''
                 if "item" in roomInfo:
-                    itemSpotted = f"You see {roomInfo['item']} littered on the ground.\n"
+                    if roomInfo["item"][0][::-1][0] == 's' :
+                        itemSpotted = f"You see {roomInfo['item'][0]} littered on the ground.\n"
+                    else :
+                        itemSpotted = f"You see a {roomInfo['item'][0]} littered on the ground.\n"
                 else :
                     itemSpotted = ''
                 status(action, hint, itemUsed, itemSpotted) #Prints the status message with each loop with actions and special messages as parameters
@@ -203,7 +238,7 @@ use ["item name"]
                 clear()
                 command = command.split(" ", 1)
                 try :
-                    if command[0] == "go": #Checks the player's commands and acts accoringly
+                    if command[0] == "go":                          #All logic in the 'go' command
                             check = 0
                             for n in roomInfo["rooms"]:
                                 if command[1] == n:
@@ -212,34 +247,52 @@ use ["item name"]
                                     check = 1
                             if check == 0:
                                 error("go")
-                    elif command[0] == "get" and command[1] != '':
+                    elif command[0] == "get" and (command[1] or command[1] == ''):  #All logic in the 'get' command
                         try :
-                            if command[1] == roomInfo["item"]:
+                            if command[1] == roomInfo["item"][0]:
                                 inventory.append(command[1])
+                                action = f"You collected the {command[1]}!\n"
+                                if roomInfo["item"][1] != 0 :
+                                    changeMap(roomInfo["item"][1])
                                 del islandMap[currentRoom]["item"]
-                                action = f"You got the {command[1]}!\n"
                             else :
                                 error()
                         except :
-                            error("g-item")
-                    elif command[0] == "use" :
+                            error("getNoItem")
+                    elif command[0] == "use" :                      #All logic in the 'use' command
                             if command[1] in inventory:
                                 try :
                                     if command[1] in roomInfo["usable"] :
                                         itemUsed = roomInfo["usable"][command[1]][0]
+                                        if not isinstance(itemUsed, str) :
+                                            itemUsed = itemUsed()
                                         if "hint" in roomInfo:
                                             del islandMap[currentRoom]["hint"]
                                         if "unlockable" in roomInfo:
                                             islandMap[currentRoom]["rooms"].append(roomInfo["unlockable"])
-                                            del islandMap[currentRoom["unlockable"]]
+                                            del islandMap[currentRoom]["unlockable"]
+                                        itemList = roomInfo["usable"][command[1]]
+                                        if itemList[len(itemList) - 2] != 0 :   #Changes any tags sharing the item's id
+                                            changeMap(itemList[len(itemList) - 2])
+                                        if itemList[len(itemList) - 1] == 1 :   #Checks if item is reusable
+                                            del islandMap[currentRoom]["usable"][command[1]]
                                         action = f"You used the {command[1]}!\n"
                                         continue
+                                    if command[1] == "binoculars" :
+                                        error("binoculars")
+                                    else :
+                                        error("useless")
                                 except :
-                                    error("useless")
+                                    if command[1] == "binoculars" :
+                                        error("binoculars")
+                                    else :
+                                        error("useless")
                             else :
                                 error("wrong-item")
-                    else:
+                    else:                                           #When player doesn't write any valid command
                         error("command")
                     itemUsed = ''
-                except :
+                except :              #Valid command, lacking parameters, since try can only fail after getting through at least one if statement
                     error('parameter')
+            print("Congratulaions, you win! You succesfully collected all of the trash!")
+            input()
