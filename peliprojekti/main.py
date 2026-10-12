@@ -225,7 +225,7 @@ while command != 'lopeta':
                     print("Invalid move!")
             def status(action = '',hint = '', item_used = '', item_spotted = ''):
                 print(
-f'''{action}{hint}{item_used}{item_spotted}---------------------
+f'''{action}{hint}{item_used}{item_spotted}=====================
 Currently in: {currentRoom}
 Inventory: {inventory}
 ---------------------
@@ -233,17 +233,19 @@ commands:
 go {roomInfo["rooms"]}
 get ["item name"]
 use ["item name"]
-
+---------------------
 save
 load
----------------------
+quit
+=====================
 ''')
             class Player:
                 def __init__(self, name, currentRoom, items):
                     self.name = name
                     self.currentRoom = currentRoom
                     self.items = items
-            while len(inventory) < 5:
+            quit = 0
+            while len(inventory) < 5 and quit == 0:
                 roomInfo = islandMap[currentRoom]
                 if "hint" in roomInfo:
                     hint = roomInfo["hint"]
@@ -318,11 +320,14 @@ load
                         saveGame()
                     elif command[0] == "load" :
                         loadGame()
+                    elif command[0] == "quit" :
+                        quit = 1
                     else:                                           #When player doesn't write any valid command
                         error("command")
                     itemUsed = ''
                 except :              #Valid command, lacking parameters, since try can only fail after getting through at least one if statement
                     error('parameter')
-            print("Congratulaions, you win! You succesfully collected all of the trash!")
-            input("Press enter>")
+            if quit == 0 :
+                print("Congratulaions, you win! You succesfully collected all of the trash!\n")
+                input("Press enter: ")
             gameOver = 1

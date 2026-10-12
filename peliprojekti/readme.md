@@ -3,7 +3,7 @@ The goal of the game is to collect all of the trash present in the island. Once 
 
 ## Moveset
 You move around with **go**.
-Collect trash with **get**.
+Collect trash with **get**
 and perhaps find some use for the trash with **use**.
 
 Some trash is hidden away and is only accessable with the trash you own.
