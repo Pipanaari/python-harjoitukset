@@ -140,14 +140,18 @@ while command != 'lopeta':
                 return text
             islandMap = {
                 "west lake": {
-                    "rooms" : ["cliffs", "vines", "south roads"]
+                    "rooms" : ["cliffs", "vines", "south roads"],
+                    "usable" : {
+                        "plastic bottle" : ["You filled the plastic bottle full of water.\n", 0, 0, 0],
+                        "binoculars" : ["Looking east you could see the other side of the lake from here.\nNothing that interesting though.\n", "You looked into the water...\nThese don't make the water any clearer to see through...\n", 4, 4, 0]
+                    }
                 },
                 "cliffs" : {
                     "item" : ["glass shard", 0], #[item name, id]
                     "rooms" : ["west lake", "north roads"],
                     "hint" : "It looks like you could almost get on top of these cliffs, but it's just beyond your reach.\n",
                     "usable" : {
-                        "box" : ["You origamied the cardboard into a sturdy stool. With the stool down and could now jump on top from here!\n", "With the cardboard stool down you're able to jump on top from here!\n", 3, 3, 0] #[All use messages, tag, id, 0 = reusable 1 = one time use]
+                        "box" : ["You origamied the cardboard into a sturdy stool. With the stool down, you can now jump up from here!\n", "With the cardboard stool down you're able to jump on top from here!\n", 3, 3, 0] #[All use messages, tag, id, 0 = reusable 1 = one time use]
                     },
                     "unlockable" : "top cliffs"
                 },
@@ -187,7 +191,8 @@ while command != 'lopeta':
                     "rooms" : ["south roads"],
                     "hint" : "There's something at the distant, but you can't quite make it out.\n",
                     "usable" : {
-                        "binoculars" : ["There's a cardboard box behind some vines in the distance! Maybe you can figure out a way to get past the vines.\n", "There's a cardboard box behind the recently cut vines. Did you really return here to admire your work from afar?\n","There's not a cardboard box behind some vines in the distance. It also looks like some of the vines got shorter.\n", 1, 0, 0]
+                        "binoculars" : ["There's a cardboard box behind some vines in the distance! Maybe you can figure out a way to get past the vines.\n", "There's a cardboard box behind the recently cut vines. Did you really return here to admire your work from afar?\n","There's not a cardboard box behind some vines in the distance. It also looks like some of the vines got shorter.\n", 1, 0, 0],
+                        "plastic bottle" : ["You filled the plastic bottle full of water.\n", 0, 0, 0]
                     }
                 }
             }
@@ -195,6 +200,23 @@ while command != 'lopeta':
             action = ''
             hint = ''
             itemUsed = ''
+            def generalUse(used = 0) :
+                if used == 1 :
+                    if command[1] == "plastic bottle" : 
+                        inventory.remove("plastic bottle")
+                        inventory.append("water bottle")
+                else :
+                    if command[1] == "binoculars" :
+                        print(f"You didn't see anything interesting with the {command[1]}.\nMaybe you could get a cooler view on top of something.")
+                    elif command[1] == "water bottle" :
+                        print(f"You poured the water out from the bottle,\nthus becoming an empty plastic bottle again.")
+                        inventory.remove("water bottle")
+                        inventory.append("plastic bottle")
+                    else :
+                        if command[1][::-1][0] == "s" :
+                            print(f"The {command[1]} don't seem too useful here.")
+                        else :
+                            print(f"The {command[1]} doesn't seem too useful here.")
             def changeMap(id = 0) : #item id is checked with usable item's tag. If they match the usable item's use message gets changed
                 for n in islandMap :
                     if "usable" in islandMap[n] :
@@ -208,19 +230,12 @@ while command != 'lopeta':
                     print("There is no such item.")
                 elif reason == "command":
                     print("That move isn't in your arsenal.")
-                elif reason == "useless":
-                    if command[1][::-1][0] == "s" :
-                        print(f"The {command[1]} don't seem too useful here.")
-                    else :
-                        print(f"The {command[1]} doesn't seem too useful here.")
                 elif reason == "wrong-item":
                     print(f"You searched for the {command[1]} but you couldn't find such a thing.")
                 elif reason == "parameter":
                     print(f"'{command[0]}' requires a parameter divided by a space")
                 elif reason == "go":
                     print(f"You tried to '{command[0]}', but didn't know where.")
-                elif reason == "binoculars":
-                    print(f"You didn't see anything interesting with the {command[1]}.\nMaybe you could get a cooler view on top of something.")
                 else:
                     print("Invalid move!")
             def status(action = '',hint = '', item_used = '', item_spotted = ''):
@@ -304,16 +319,12 @@ quit
                                         if itemList[len(itemList) - 1] == 1 :   #Checks if item is reusable
                                             del islandMap[currentRoom]["usable"][command[1]]
                                         action = f"You used the {command[1]}!\n"
+                                        generalUse(1)
                                         continue
-                                    if command[1] == "binoculars" :
-                                        error("binoculars")
                                     else :
-                                        error("useless")
+                                        generalUse()
                                 except :
-                                    if command[1] == "binoculars" :
-                                        error("binoculars")
-                                    else :
-                                        error("useless")
+                                    generalUse()
                             else :
                                 error("wrong-item")
                     elif command[0] == "save" :
