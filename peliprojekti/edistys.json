@@ -1,0 +1,114 @@
+{
+    "islandMap": {
+        "west lake": {
+            "rooms": [
+                "cliffs",
+                "vines",
+                "south roads"
+            ]
+        },
+        "cliffs": {
+            "rooms": [
+                "west lake",
+                "north roads"
+            ],
+            "hint": "It looks like you could almost get on top of these cliffs, but it's just beyond your reach.\n",
+            "usable": {
+                "box": [
+                    "You origamied the cardboard into a sturdy stool. With the stool down and could now jump on top from here!\n",
+                    "With the cardboard stool down you're able to jump on top from here!\n",
+                    3,
+                    3,
+                    0
+                ]
+            },
+            "unlockable": "top cliffs"
+        },
+        "top cliffs": {
+            "item": [
+                "plastic bottle",
+                2
+            ],
+            "rooms": [
+                "cliffs"
+            ],
+            "usable": {
+                "binoculars": [
+                    "",
+                    0,
+                    0,
+                    0
+                ]
+            }
+        },
+        "vines": {
+            "rooms": [
+                "west lake",
+                "north roads",
+                "behind vines"
+            ],
+            "usable": {}
+        },
+        "behind vines": {
+            "item": [
+                "box",
+                1
+            ],
+            "rooms": [
+                "vines"
+            ]
+        },
+        "north roads": {
+            "rooms": [
+                "cliffs",
+                "vines"
+            ]
+        },
+        "south roads": {
+            "rooms": [
+                "west lake",
+                "boulder",
+                "east lake"
+            ]
+        },
+        "boulder": {
+            "item": [
+                "binoculars",
+                0
+            ],
+            "rooms": [
+                "south roads"
+            ],
+            "usable": {
+                "binoculars": [
+                    "Standing on top of the boulder, you could see some more trash on top of the cliffs.\n",
+                    "You can see the top of the cliffs look as clean as ever!\n",
+                    2,
+                    0,
+                    0
+                ]
+            }
+        },
+        "east lake": {
+            "rooms": [
+                "south roads"
+            ],
+            "hint": "There's something at the distant, but you can't quite make it out.\n",
+            "usable": {
+                "binoculars": [
+                    "There's a cardboard box behind the recently cut vines. Did you really return here to admire your work from afar?\n",
+                    "There's not a cardboard box behind some vines in the distance. It also looks like some of the vines got shorter.\n",
+                    1,
+                    0,
+                    0
+                ]
+            }
+        }
+    },
+    "inventory": [
+        "glass shard",
+        "metal scrap"
+    ],
+    "currentRoom": "vines",
+    "player": "m"
+}
